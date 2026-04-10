@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — Safe Set Standards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy: #1B2A4A;
+            --teal: #0D7377;
+            --mint: #14FFEC;
+            --orange: #F4A261;
+            --bg: #0f1b2e;
+            --surface: #162036;
+            --surface-light: #1e2d4a;
+            --text: #e4e8ef;
+            --text-muted: #8a95a8;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--bg);
+            background-image: url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem 4rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(27, 42, 74, 0.88);
+            z-index: 0;
+        }
+
+        body > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .brand h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--mint);
+        }
+
+        .brand p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--surface-light);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 520px;
+            padding: 2.25rem 2rem;
+        }
+
+        .card h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        .error-banner {
+            background: rgba(244, 162, 97, 0.12);
+            border: 1px solid var(--orange);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--orange);
+        }
+
+        .field {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"] {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            font-family: 'Barlow', sans-serif;
+            font-size: 1rem;
+            color: var(--text);
+            background: var(--bg);
+            border: 1px solid var(--surface-light);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.25);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        /* Role selector buttons */
+        .role-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+        }
+
+        .role-btn {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .role-btn input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .role-btn span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.65rem 0.5rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            background: var(--bg);
+            border: 1px solid var(--surface-light);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .role-btn input:checked + span {
+            color: var(--mint);
+            border-color: var(--teal);
+            background: rgba(13, 115, 119, 0.15);
+            box-shadow: 0 0 0 2px rgba(13, 115, 119, 0.3);
+        }
+
+        .role-btn span:hover {
+            border-color: var(--teal);
+            color: var(--text);
+        }
+
+        /* Conditional sections */
+        .conditional {
+            display: none;
+            animation: slideIn 0.25s ease;
+        }
+
+        .conditional.visible {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .minor-section {
+            background: var(--bg);
+            border: 1px solid var(--surface-light);
+            border-radius: 10px;
+            padding: 1.25rem 1rem;
+            margin-top: 0.25rem;
+        }
+
+        .minor-section h3 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--teal);
+            margin-bottom: 1rem;
+        }
+
+        .minor-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.75rem;
+        }
+
+        .minor-row .age-field {
+            max-width: 90px;
+        }
+
+        /* Submit */
+        button[type="submit"] {
+            width: 100%;
+            margin-top: 0.75rem;
+            padding: 0.85rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--navy);
+            background: var(--mint);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button[type="submit"]:hover {
+            background: #3dfff0;
+        }
+
+        button[type="submit"]:active {
+            transform: scale(0.98);
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 480px) {
+            body { padding: 1.25rem 0.75rem 3rem; }
+            .card { padding: 1.5rem 1.25rem; }
+            .brand h1 { font-size: 1.6rem; }
+            .role-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+            .minor-row { grid-template-columns: 1fr; }
+            .minor-row .age-field { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="brand">
+        <h1>Safe Set Standards</h1>
+        <p>Photography community safety training &amp; sign-off</p>
+    </div>
+
+    <div class="card">
+        <h2>Join the Community</h2>
+
+        {% if error %}
+        <div class="error-banner">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="/register" id="registerForm">
+            <div class="field">
+                <label for="full_name">Full Name</label>
+                <input type="text" id="full_name" name="full_name" placeholder="Your full name" required>
+            </div>
+
+            <div class="field">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="field">
+                <label>Your Role</label>
+                <div class="role-grid">
+                    <label class="role-btn">
+                        <input type="radio" name="role" value="photographer" required>
+                        <span>Photographer</span>
+                    </label>
+                    <label class="role-btn">
+                        <input type="radio" name="role" value="model">
+                        <span>Model</span>
+                    </label>
+                    <label class="role-btn">
+                        <input type="radio" name="role" value="parent_guardian">
+                        <span>Parent / Guardian</span>
+                    </label>
+                    <label class="role-btn">
+                        <input type="radio" name="role" value="other">
+                        <span>Other</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="field conditional" id="otherRoleField">
+                <label for="other_role">Describe Your Role</label>
+                <input type="text" id="other_role" name="other_role" placeholder="e.g. MUA, Stylist, Studio Manager…">
+            </div>
+
+            <div class="field conditional" id="minorSection">
+                <div class="minor-section">
+                    <h3>Minor Details</h3>
+                    <div class="field">
+                        <label for="minor_name">Minor's Full Name</label>
+                        <input type="text" id="minor_name" name="minor_name" placeholder="Child's full name">
+                    </div>
+                    <div class="minor-row">
+                        <div class="field">
+                            <label for="guardian_name">Guardian Name</label>
+                            <input type="text" id="guardian_name" name="guardian_name" placeholder="Your name as guardian">
+                        </div>
+                        <div class="field age-field">
+                            <label for="minor_age">Age</label>
+                            <input type="number" id="minor_age" name="minor_age" min="0" max="17" placeholder="—">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <script>
+        const radios = document.querySelectorAll('input[name="role"]');
+        const otherField = document.getElementById('otherRoleField');
+        const minorSection = document.getElementById('minorSection');
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                const val = radio.value;
+                otherField.classList.toggle('visible', val === 'other');
+                minorSection.classList.toggle('visible', val === 'parent_guardian');
+            });
+        });
+    </script>
+
+</body>
+</html>

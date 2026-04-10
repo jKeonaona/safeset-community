@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Training — Safe Set Standards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy: #1B2A4A;
+            --teal: #0D7377;
+            --mint: #14FFEC;
+            --orange: #F4A261;
+            --bg: #0f1b2e;
+            --surface: #162036;
+            --surface-light: #1e2d4a;
+            --text: #e4e8ef;
+            --text-muted: #8a95a8;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem 4rem;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--mint);
+        }
+
+        .brand p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--surface-light);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 720px;
+            padding: 2.25rem 2rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .card h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            margin-bottom: 1.25rem;
+            color: var(--text);
+        }
+
+        /* Video embed */
+        .video-wrap {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 */
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000;
+            margin-bottom: 1.5rem;
+        }
+
+        .video-wrap iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* Progress bar */
+        .progress-section {
+            margin-bottom: 0.25rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-label {
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+
+        .progress-pct {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--mint);
+            transition: color 0.3s;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: var(--bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--teal), var(--mint));
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-fill.complete {
+            background: linear-gradient(90deg, var(--mint), #3dfff0);
+        }
+
+        .threshold-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+            text-align: right;
+        }
+
+        .threshold-hint .mark {
+            color: var(--orange);
+            font-weight: 600;
+        }
+
+        /* Acknowledgment section */
+        .ack-section {
+            position: relative;
+        }
+
+        .ack-inner {
+            transition: opacity 0.3s, filter 0.3s;
+        }
+
+        .ack-section.locked .ack-inner {
+            opacity: 0.35;
+            filter: grayscale(0.6);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .lock-message {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(244, 162, 97, 0.1);
+            border: 1px solid rgba(244, 162, 97, 0.3);
+            border-radius: 8px;
+            padding: 0.7rem 1rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--orange);
+        }
+
+        .lock-message .lock-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .lock-message.hidden {
+            display: none;
+        }
+
+        .unlock-message {
+            display: none;
+            align-items: center;
+            gap: 0.6rem;
+            background: rgba(13, 115, 119, 0.12);
+            border: 1px solid rgba(20, 255, 236, 0.25);
+            border-radius: 8px;
+            padding: 0.7rem 1rem;
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--mint);
+        }
+
+        .unlock-message.visible {
+            display: flex;
+        }
+
+        /* Custom checkbox */
+        .checkbox-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            cursor: pointer;
+        }
+
+        .checkbox-row input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            background: var(--bg);
+            border: 2px solid var(--surface-light);
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            top: 1px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .checkbox-row input[type="checkbox"]:checked {
+            background: var(--teal);
+            border-color: var(--mint);
+        }
+
+        .checkbox-row input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid var(--mint);
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .checkbox-row span {
+            font-size: 0.95rem;
+            line-height: 1.45;
+            color: var(--text);
+        }
+
+        /* Buttons */
+        .btn-confirm {
+            width: 100%;
+            padding: 0.85rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--navy);
+            background: var(--mint);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-confirm:hover:not(:disabled) {
+            background: #3dfff0;
+        }
+
+        .btn-confirm:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .btn-confirm:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            body { padding: 1.25rem 0.75rem 3rem; }
+            .card { padding: 1.5rem 1.25rem; }
+            .brand h1 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="brand">
+        <h1>Safe Set Standards</h1>
+        <p>Safety training &amp; acknowledgment</p>
+    </div>
+
+    <!-- Video Card -->
+    <div class="card">
+        <h2>Safety Training Video</h2>
+
+        <div class="video-wrap">
+            <iframe
+                id="ytPlayer"
+                src="https://www.youtube.com/embed/VIDEO_ID_HERE?enablejsapi=1&origin={{ request.url_root }}"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-header">
+                <span class="progress-label">Video Progress</span>
+                <span class="progress-pct" id="pctText">0%</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="threshold-hint">
+                Acknowledgment unlocks at <span class="mark">90%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acknowledgment Card -->
+    <div class="card">
+        <h2>Acknowledgment</h2>
+
+        <div class="ack-section locked" id="ackSection">
+            <div class="lock-message" id="lockMsg">
+                <span class="lock-icon">&#128274;</span>
+                <span>Complete at least 90% of the video above to unlock this section.</span>
+            </div>
+
+            <div class="unlock-message" id="unlockMsg">
+                <span class="lock-icon">&#128275;</span>
+                <span>Video complete — you may now acknowledge the standards.</span>
+            </div>
+
+            <div class="ack-inner">
+                <form method="POST" action="/complete/{{ participant_id }}" id="ackForm">
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="ackCheck" name="acknowledged" required>
+                        <span>I have watched this video in full and agree to the standards outlined.</span>
+                    </label>
+                    <button type="submit" class="btn-confirm" id="confirmBtn" disabled>Confirm Acknowledgment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        const PARTICIPANT_ID = "{{ participant_id }}";
+        const THRESHOLD = 0.9;
+        const HEARTBEAT_INTERVAL = 30000;
+
+        let player = null;
+        let unlocked = false;
+        let heartbeatTimer = null;
+        let highWaterMark = 0; // highest fraction watched
+
+        // Elements
+        const progressFill = document.getElementById('progressFill');
+        const pctText = document.getElementById('pctText');
+        const ackSection = document.getElementById('ackSection');
+        const lockMsg = document.getElementById('lockMsg');
+        const unlockMsg = document.getElementById('unlockMsg');
+        const ackCheck = document.getElementById('ackCheck');
+        const confirmBtn = document.getElementById('confirmBtn');
+
+        // YouTube player ready callback (global)
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('ytPlayer', {
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady() {
+            startProgressTracker();
+            startHeartbeat();
+        }
+
+        function onPlayerStateChange(event) {
+            // When video ends, jump to 100%
+            if (event.data === YT.PlayerState.ENDED) {
+                updateProgress(1);
+            }
+        }
+
+        function startProgressTracker() {
+            setInterval(() => {
+                if (!player || typeof player.getDuration !== 'function') return;
+                const duration = player.getDuration();
+                if (duration <= 0) return;
+                const current = player.getCurrentTime();
+                const fraction = Math.min(current / duration, 1);
+                // Only move forward — no rewinding the progress
+                if (fraction > highWaterMark) {
+                    highWaterMark = fraction;
+                }
+                updateProgress(highWaterMark);
+            }, 1000);
+        }
+
+        function updateProgress(fraction) {
+            const pct = Math.round(fraction * 100);
+            progressFill.style.width = pct + '%';
+            pctText.textContent = pct + '%';
+
+            if (fraction >= THRESHOLD) {
+                progressFill.classList.add('complete');
+                pctText.style.color = 'var(--mint)';
+            }
+
+            if (fraction >= THRESHOLD && !unlocked) {
+                unlock();
+            }
+        }
+
+        function unlock() {
+            unlocked = true;
+            ackSection.classList.remove('locked');
+            lockMsg.classList.add('hidden');
+            unlockMsg.classList.add('visible');
+        }
+
+        // Checkbox enables confirm button
+        ackCheck.addEventListener('change', () => {
+            confirmBtn.disabled = !ackCheck.checked;
+        });
+
+        // Heartbeat — ping server every 30s with watch progress
+        function startHeartbeat() {
+            heartbeatTimer = setInterval(() => {
+                const pct = Math.round(highWaterMark * 100);
+                fetch('/heartbeat/' + PARTICIPANT_ID, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ progress: pct })
+                }).catch(() => {}); // silent fail
+            }, HEARTBEAT_INTERVAL);
+        }
+    </script>
+
+</body>
+</html>

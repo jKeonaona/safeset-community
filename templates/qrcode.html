@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your QR Pass — Safe Set Standards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy: #1B2A4A;
+            --teal: #0D7377;
+            --mint: #14FFEC;
+            --orange: #F4A261;
+            --bg: #0f1b2e;
+            --surface: #162036;
+            --surface-light: #1e2d4a;
+            --text: #e4e8ef;
+            --text-muted: #8a95a8;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem 4rem;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--mint);
+        }
+
+        .brand p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--surface-light);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 520px;
+            padding: 2.25rem 2rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* Success banner */
+        .success-banner {
+            text-align: center;
+            margin-bottom: 1.75rem;
+        }
+
+        .success-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 1rem;
+            background: rgba(13, 115, 119, 0.15);
+            border: 2px solid var(--teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+
+        .success-banner h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--mint);
+            margin-bottom: 0.35rem;
+        }
+
+        .success-banner p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Participant identity */
+        .identity {
+            text-align: center;
+            padding: 1.25rem 0;
+            border-top: 1px solid var(--surface-light);
+            border-bottom: 1px solid var(--surface-light);
+            margin-bottom: 1.75rem;
+        }
+
+        .identity .name {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.75rem;
+            color: var(--text);
+            letter-spacing: 0.02em;
+        }
+
+        .identity .role-badge {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.3rem 1rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--navy);
+            background: var(--orange);
+            border-radius: 20px;
+        }
+
+        /* QR code display */
+        .qr-container {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .qr-frame {
+            display: inline-block;
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 14px;
+            box-shadow: 0 0 40px rgba(20, 255, 236, 0.08), 0 4px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .qr-frame img {
+            display: block;
+            width: 260px;
+            height: 260px;
+            image-rendering: pixelated;
+        }
+
+        /* Download button */
+        .btn-download {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 0.85rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            text-decoration: none;
+            color: var(--navy);
+            background: var(--mint);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-download:hover {
+            background: #3dfff0;
+        }
+
+        .btn-download:active {
+            transform: scale(0.98);
+        }
+
+        .btn-download svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--navy);
+        }
+
+        /* Instructions card */
+        .instructions h3 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        .steps {
+            list-style: none;
+            counter-reset: steps;
+        }
+
+        .steps li {
+            counter-increment: steps;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        .steps li::before {
+            content: counter(steps);
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--mint);
+            background: rgba(13, 115, 119, 0.2);
+            border: 1px solid var(--teal);
+            border-radius: 50%;
+        }
+
+        /* Warning banner */
+        .warning {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            background: rgba(244, 162, 97, 0.1);
+            border: 1px solid rgba(244, 162, 97, 0.35);
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .warning-icon {
+            flex-shrink: 0;
+            font-size: 1.15rem;
+            line-height: 1.4;
+        }
+
+        .warning p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--orange);
+        }
+
+        .warning strong {
+            font-weight: 600;
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            body { padding: 1.25rem 0.75rem 3rem; }
+            .card { padding: 1.5rem 1.25rem; }
+            .brand h1 { font-size: 1.6rem; }
+            .success-banner h2 { font-size: 1.35rem; }
+            .identity .name { font-size: 1.45rem; }
+            .qr-frame img { width: 220px; height: 220px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="brand">
+        <h1>Safe Set Standards</h1>
+        <p>Photography community safety training &amp; sign-off</p>
+    </div>
+
+    <!-- Pass Card -->
+    <div class="card">
+        <div class="success-banner">
+            <div class="success-icon">&#10003;</div>
+            <h2>Training Complete</h2>
+            <p>Congratulations — you've completed the Safe Set Standards safety training and are cleared to attend.</p>
+        </div>
+
+        <div class="identity">
+            <div class="name">{{ participant.full_name }}</div>
+            <div class="role-badge">{{ participant.role | replace('_', ' ') }}</div>
+        </div>
+
+        <div class="qr-container">
+            <div class="qr-frame">
+                <img src="{{ participant.qr_code }}" alt="Your QR entry pass">
+            </div>
+        </div>
+
+        <a class="btn-download" href="{{ participant.qr_code }}" download="safeset-pass.png">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/>
+            </svg>
+            Download QR Pass
+        </a>
+    </div>
+
+    <!-- Instructions Card -->
+    <div class="card instructions">
+        <h3>What to Do Next</h3>
+
+        <ol class="steps">
+            <li>Save this QR code to your phone — screenshot this page or tap the download button above.</li>
+            <li>Keep it handy on the day. You'll need to show it at check-in before entering the set.</li>
+            <li>If someone on set asks to verify your status, show them your QR code to scan.</li>
+        </ol>
+
+        <div class="warning">
+            <span class="warning-icon">&#9888;</span>
+            <p><strong>No QR code, no entry.</strong> This is your proof of completed safety training. Without it, you will not be admitted to the set. Make sure it's saved and accessible before you arrive.</p>
+        </div>
+    </div>
+
+</body>
+</html>

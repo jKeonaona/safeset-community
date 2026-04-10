@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-In Scanner — Safe Set Standards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --navy: #1B2A4A;
+            --teal: #0D7377;
+            --mint: #14FFEC;
+            --orange: #F4A261;
+            --bg: #0f1b2e;
+            --surface: #162036;
+            --surface-light: #1e2d4a;
+            --text: #e4e8ef;
+            --text-muted: #8a95a8;
+            --green: #22c55e;
+            --green-dim: rgba(34, 197, 94, 0.12);
+            --red: #ef4444;
+            --red-dim: rgba(239, 68, 68, 0.12);
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 1rem 4rem;
+        }
+
+        /* Brand */
+        .brand {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .brand h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--mint);
+        }
+
+        .brand .mode-tag {
+            display: inline-block;
+            margin-top: 0.4rem;
+            padding: 0.2rem 0.8rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--navy);
+            background: var(--orange);
+            border-radius: 20px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--surface-light);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 520px;
+            padding: 1.75rem 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text);
+            margin-bottom: 1rem;
+        }
+
+        /* Input rows */
+        .input-row {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .input-row input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        input[type="text"],
+        input[type="search"] {
+            width: 100%;
+            padding: 0.75rem 0.9rem;
+            font-family: 'Barlow', sans-serif;
+            font-size: 1.05rem;
+            color: var(--text);
+            background: var(--bg);
+            border: 1px solid var(--surface-light);
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(13, 115, 119, 0.25);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        /* Buttons */
+        .btn {
+            flex-shrink: 0;
+            padding: 0.75rem 1.4rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:active { transform: scale(0.97); }
+
+        .btn-mint {
+            color: var(--navy);
+            background: var(--mint);
+        }
+
+        .btn-mint:hover { background: #3dfff0; }
+
+        .btn-teal {
+            color: var(--text);
+            background: var(--teal);
+        }
+
+        .btn-teal:hover { background: #0f8c91; }
+
+        /* Result banners */
+        .result {
+            display: none;
+            margin-top: 1.25rem;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            animation: popIn 0.3s ease;
+        }
+
+        .result.visible { display: block; }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Verified */
+        .result-verified {
+            background: var(--green-dim);
+            border: 2px solid var(--green);
+        }
+
+        .result-verified .result-status {
+            color: var(--green);
+        }
+
+        /* Failed */
+        .result-failed {
+            background: var(--red-dim);
+            border: 2px solid var(--red);
+        }
+
+        .result-failed .result-status {
+            color: var(--red);
+        }
+
+        .result-status {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 0.15rem;
+        }
+
+        .result-status-icon {
+            font-size: 2.8rem;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-name {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: var(--text);
+            margin-top: 0.5rem;
+        }
+
+        .result-meta {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .result-meta-item {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .result-meta-item strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .result-message {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-top: 0.35rem;
+        }
+
+        /* Clear / reset */
+        .btn-clear {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.45rem 1.2rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            background: var(--surface-light);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-clear:hover {
+            background: var(--navy);
+            color: var(--text);
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 0.25rem 0;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--surface-light);
+        }
+
+        /* Lookup results list */
+        .lookup-results {
+            margin-top: 1rem;
+        }
+
+        .lookup-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.85rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--surface-light);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: border-color 0.2s;
+        }
+
+        .lookup-item:hover {
+            border-color: var(--teal);
+        }
+
+        .lookup-item-info {
+            min-width: 0;
+        }
+
+        .lookup-item-name {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .lookup-item-detail {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.15rem;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.35rem;
+            position: relative;
+            top: -1px;
+        }
+
+        .status-dot.cleared { background: var(--green); }
+        .status-dot.pending { background: var(--orange); }
+
+        .lookup-item .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .lookup-empty {
+            text-align: center;
+            padding: 1.25rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            body { padding: 1rem 0.6rem 3rem; }
+            .card { padding: 1.25rem 1rem; }
+            .brand h1 { font-size: 1.5rem; }
+            .result-status { font-size: 1.6rem; }
+            .result-status-icon { font-size: 2.2rem; }
+            .result-name { font-size: 1.25rem; }
+            .result-meta { gap: 0.75rem; }
+            .input-row { flex-direction: column; }
+            .input-row .btn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="brand">
+        <h1>Safe Set Standards</h1>
+        <span class="mode-tag">Organizer Check-In</span>
+    </div>
+
+    <!-- QR Scan Card -->
+    <div class="card">
+        <h2>Scan QR Code</h2>
+
+        <div class="input-row">
+            <input type="text" id="qrInput" placeholder="Paste or type QR code value" autocomplete="off" autofocus>
+            <button class="btn btn-mint" id="scanBtn" onclick="doScan()">Scan</button>
+        </div>
+
+        <!-- Scan result -->
+        <div class="result result-verified" id="resultVerified">
+            <div class="result-status-icon">&#10004;</div>
+            <div class="result-status">Verified</div>
+            <div class="result-name" id="verifiedName"></div>
+            <div class="result-meta">
+                <span class="result-meta-item">Role: <strong id="verifiedRole"></strong></span>
+                <span class="result-meta-item">Completed: <strong id="verifiedDate"></strong></span>
+            </div>
+            <button class="btn-clear" onclick="clearResult()">Clear &amp; Scan Next</button>
+        </div>
+
+        <div class="result result-failed" id="resultFailed">
+            <div class="result-status-icon">&#10008;</div>
+            <div class="result-status" id="failedStatus">Not Found</div>
+            <div class="result-message" id="failedMessage">No matching participant for this QR code.</div>
+            <button class="btn-clear" onclick="clearResult()">Clear &amp; Try Again</button>
+        </div>
+    </div>
+
+    <!-- Manual Lookup Card -->
+    <div class="card">
+        <h2>Manual Lookup</h2>
+
+        <div class="input-row">
+            <input type="search" id="lookupInput" placeholder="Search by name or email" autocomplete="off">
+            <button class="btn btn-teal" id="lookupBtn" onclick="doLookup()">Search</button>
+        </div>
+
+        <div class="lookup-results" id="lookupResults"></div>
+    </div>
+
+    <script>
+        const qrInput = document.getElementById('qrInput');
+        const scanBtn = document.getElementById('scanBtn');
+        const resultVerified = document.getElementById('resultVerified');
+        const resultFailed = document.getElementById('resultFailed');
+        const lookupInput = document.getElementById('lookupInput');
+        const lookupResults = document.getElementById('lookupResults');
+
+        // Scan on Enter key
+        qrInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') doScan();
+        });
+
+        lookupInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') doLookup();
+        });
+
+        async function doScan() {
+            const code = qrInput.value.trim();
+            if (!code) return;
+
+            scanBtn.textContent = '...';
+            clearResult();
+
+            try {
+                const res = await fetch('/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ qr_code: code })
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.verified) {
+                    document.getElementById('verifiedName').textContent = data.full_name || '';
+                    document.getElementById('verifiedRole').textContent = (data.role || '').replace(/_/g, ' ');
+                    document.getElementById('verifiedDate').textContent = data.completed_date || '—';
+                    resultVerified.classList.add('visible');
+                } else {
+                    document.getElementById('failedStatus').textContent = data.status || 'Not Found';
+                    document.getElementById('failedMessage').textContent = data.message || 'No matching participant for this QR code.';
+                    resultFailed.classList.add('visible');
+                }
+            } catch {
+                document.getElementById('failedStatus').textContent = 'Error';
+                document.getElementById('failedMessage').textContent = 'Could not reach the server. Check your connection.';
+                resultFailed.classList.add('visible');
+            }
+
+            scanBtn.textContent = 'Scan';
+        }
+
+        function clearResult() {
+            resultVerified.classList.remove('visible');
+            resultFailed.classList.remove('visible');
+            qrInput.value = '';
+            qrInput.focus();
+        }
+
+        async function doLookup() {
+            const query = lookupInput.value.trim();
+            if (!query) return;
+
+            lookupResults.innerHTML = '<div class="lookup-empty">Searching...</div>';
+
+            try {
+                const res = await fetch('/lookup?q=' + encodeURIComponent(query));
+                const data = await res.json();
+
+                if (!data.results || data.results.length === 0) {
+                    lookupResults.innerHTML = '<div class="lookup-empty">No participants found.</div>';
+                    return;
+                }
+
+                lookupResults.innerHTML = data.results.map(p => {
+                    const dotClass = p.completed ? 'cleared' : 'pending';
+                    const dotLabel = p.completed ? 'Cleared' : 'Pending';
+                    const role = (p.role || '').replace(/_/g, ' ');
+                    return `
+                        <div class="lookup-item">
+                            <div class="lookup-item-info">
+                                <div class="lookup-item-name">${escapeHtml(p.full_name)}</div>
+                                <div class="lookup-item-detail">
+                                    <span class="status-dot ${dotClass}"></span>${dotLabel} &middot; ${escapeHtml(role)} &middot; ${escapeHtml(p.email)}
+                                </div>
+                            </div>
+                            <button class="btn btn-teal" onclick="quickScan('${escapeAttr(p.qr_value)}')">Verify</button>
+                        </div>
+                    `;
+                }).join('');
+            } catch {
+                lookupResults.innerHTML = '<div class="lookup-empty">Server error. Try again.</div>';
+            }
+        }
+
+        function quickScan(code) {
+            qrInput.value = code;
+            doScan();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function escapeHtml(str) {
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
+
+        function escapeAttr(str) {
+            return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+    </script>
+
+</body>
+</html>
