@@ -253,6 +253,51 @@
             transform: scale(0.98);
         }
 
+        /* Language switcher */
+        .lang-switcher {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.35rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .lang-btn {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .lang-btn input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .lang-btn span {
+            display: inline-block;
+            padding: 0.3rem 0.85rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: var(--text-muted);
+            background: var(--bg);
+            border: 1px solid var(--surface-light);
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+
+        .lang-btn input:checked + span {
+            color: var(--navy);
+            background: var(--mint);
+            border-color: var(--mint);
+        }
+
+        .lang-btn span:hover {
+            border-color: var(--teal);
+            color: var(--text);
+        }
+
         /* Mobile tweaks */
         @media (max-width: 480px) {
             body { padding: 1.25rem 0.75rem 3rem; }
@@ -268,11 +313,22 @@
 
     <div class="brand">
         <h1>Safe Set Standards</h1>
-        <p>Photography community safety training &amp; sign-off</p>
+        <p data-i18n="tagline">Photography community safety training &amp; sign-off</p>
     </div>
 
     <div class="card">
-        <h2>Join the Community</h2>
+        <div class="lang-switcher">
+            <label class="lang-btn">
+                <input type="radio" name="lang" value="en" checked>
+                <span>English</span>
+            </label>
+            <label class="lang-btn">
+                <input type="radio" name="lang" value="es">
+                <span>Español</span>
+            </label>
+        </div>
+
+        <h2 data-i18n="formTitle">Join the Community</h2>
 
         {% if error %}
         <div class="error-banner">{{ error }}</div>
@@ -280,67 +336,68 @@
 
         <form method="POST" action="/register" id="registerForm">
             <div class="field">
-                <label for="full_name">Full Name</label>
-                <input type="text" id="full_name" name="full_name" placeholder="Your full name" required>
+                <label for="full_name" data-i18n="labelName">Full Name</label>
+                <input type="text" id="full_name" name="full_name" placeholder="Your full name" data-i18n-placeholder="placeholderName" required>
             </div>
 
             <div class="field">
-                <label for="email">Email</label>
+                <label for="email" data-i18n="labelEmail">Email</label>
                 <input type="email" id="email" name="email" placeholder="you@example.com" required>
             </div>
 
             <div class="field">
-                <label>Your Role</label>
+                <label data-i18n="labelRole">Your Role</label>
                 <div class="role-grid">
                     <label class="role-btn">
                         <input type="radio" name="role" value="photographer" required>
-                        <span>Photographer</span>
+                        <span data-i18n="rolePhotographer">Photographer</span>
                     </label>
                     <label class="role-btn">
                         <input type="radio" name="role" value="model">
-                        <span>Model</span>
+                        <span data-i18n="roleModel">Model</span>
                     </label>
                     <label class="role-btn">
                         <input type="radio" name="role" value="parent_guardian">
-                        <span>Parent / Guardian</span>
+                        <span data-i18n="roleGuardian">Parent / Guardian</span>
                     </label>
                     <label class="role-btn">
                         <input type="radio" name="role" value="other">
-                        <span>Other</span>
+                        <span data-i18n="roleOther">Other</span>
                     </label>
                 </div>
             </div>
 
             <div class="field conditional" id="otherRoleField">
-                <label for="other_role">Describe Your Role</label>
-                <input type="text" id="other_role" name="other_role" placeholder="e.g. MUA, Stylist, Studio Manager…">
+                <label for="other_role" data-i18n="labelOtherRole">Describe Your Role</label>
+                <input type="text" id="other_role" name="other_role" placeholder="e.g. MUA, Stylist, Studio Manager…" data-i18n-placeholder="placeholderOtherRole">
             </div>
 
             <div class="field conditional" id="minorSection">
                 <div class="minor-section">
-                    <h3>Minor Details</h3>
+                    <h3 data-i18n="minorHeading">Minor Details</h3>
                     <div class="field">
-                        <label for="minor_name">Minor's Full Name</label>
-                        <input type="text" id="minor_name" name="minor_name" placeholder="Child's full name">
+                        <label for="minor_name" data-i18n="labelMinorName">Minor's Full Name</label>
+                        <input type="text" id="minor_name" name="minor_name" placeholder="Child's full name" data-i18n-placeholder="placeholderMinorName">
                     </div>
                     <div class="minor-row">
                         <div class="field">
-                            <label for="guardian_name">Guardian Name</label>
-                            <input type="text" id="guardian_name" name="guardian_name" placeholder="Your name as guardian">
+                            <label for="guardian_name" data-i18n="labelGuardianName">Guardian Name</label>
+                            <input type="text" id="guardian_name" name="guardian_name" placeholder="Your name as guardian" data-i18n-placeholder="placeholderGuardianName">
                         </div>
                         <div class="field age-field">
-                            <label for="minor_age">Age</label>
+                            <label for="minor_age" data-i18n="labelAge">Age</label>
                             <input type="number" id="minor_age" name="minor_age" min="0" max="17" placeholder="—">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <button type="submit">Register</button>
+            <button type="submit" data-i18n="submitBtn">Register</button>
         </form>
     </div>
 
     <script>
+        // ── Role conditional visibility ──────────────────────────────────────
         const radios = document.querySelectorAll('input[name="role"]');
         const otherField = document.getElementById('otherRoleField');
         const minorSection = document.getElementById('minorSection');
@@ -351,6 +408,75 @@
                 otherField.classList.toggle('visible', val === 'other');
                 minorSection.classList.toggle('visible', val === 'parent_guardian');
             });
+        });
+
+        // ── Translations ─────────────────────────────────────────────────────
+        const translations = {
+            en: {
+                tagline:              'Photography community safety training \u0026 sign-off',
+                formTitle:            'Join the Community',
+                labelName:            'Full Name',
+                placeholderName:      'Your full name',
+                labelEmail:           'Email',
+                labelRole:            'Your Role',
+                rolePhotographer:     'Photographer',
+                roleModel:            'Model',
+                roleGuardian:         'Parent / Guardian',
+                roleOther:            'Other',
+                labelOtherRole:       'Describe Your Role',
+                placeholderOtherRole: 'e.g. MUA, Stylist, Studio Manager\u2026',
+                minorHeading:         'Minor Details',
+                labelMinorName:       "Minor's Full Name",
+                placeholderMinorName: "Child's full name",
+                labelGuardianName:    'Guardian Name',
+                placeholderGuardianName: 'Your name as guardian',
+                labelAge:             'Age',
+                submitBtn:            'Register',
+            },
+            es: {
+                tagline:              'Entrenamiento de seguridad para la comunidad fotogr\u00e1fica',
+                formTitle:            '\xdanete a la Comunidad',
+                labelName:            'Nombre Completo',
+                placeholderName:      'Tu nombre completo',
+                labelEmail:           'Correo Electr\u00f3nico',
+                labelRole:            'Tu Rol',
+                rolePhotographer:     'Fot\u00f3grafo/a',
+                roleModel:            'Modelo',
+                roleGuardian:         'Padre / Tutor',
+                roleOther:            'Otro',
+                labelOtherRole:       'Describe tu Rol',
+                placeholderOtherRole: 'Ej. Maquillista, Estilista, Director\u2026',
+                minorHeading:         'Datos del Menor',
+                labelMinorName:       'Nombre Completo del Menor',
+                placeholderMinorName: 'Nombre del ni\u00f1o/a',
+                labelGuardianName:    'Nombre del Tutor',
+                placeholderGuardianName: 'Tu nombre como tutor/a',
+                labelAge:             'Edad',
+                submitBtn:            'Registrarse',
+            }
+        };
+
+        function applyLanguage(lang) {
+            const t = translations[lang];
+
+            // Text content
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key] !== undefined) el.textContent = t[key];
+            });
+
+            // Placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (t[key] !== undefined) el.placeholder = t[key];
+            });
+
+            document.documentElement.lang = lang;
+        }
+
+        // ── Language switcher ────────────────────────────────────────────────
+        document.querySelectorAll('input[name="lang"]').forEach(radio => {
+            radio.addEventListener('change', () => applyLanguage(radio.value));
         });
     </script>
 
