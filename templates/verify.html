@@ -347,6 +347,149 @@
             color: var(--text-muted);
         }
 
+        /* Camera scanner */
+        .camera-toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-top: 0.75rem;
+        }
+
+        .btn-camera {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.65rem 1.1rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text);
+            background: var(--surface-light);
+            border: 1px solid var(--teal);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-camera:hover {
+            background: rgba(13, 115, 119, 0.2);
+            color: var(--mint);
+        }
+
+        .btn-camera svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        .camera-viewport {
+            display: none;
+            margin-top: 1rem;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000;
+            aspect-ratio: 4 / 3;
+        }
+
+        .camera-viewport.active { display: block; }
+
+        .camera-viewport video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Hidden canvas used by jsQR */
+        #qrCanvas { display: none; }
+
+        /* Scanning overlay */
+        .scan-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .scan-box {
+            width: min(60%, 220px);
+            aspect-ratio: 1;
+            position: relative;
+        }
+
+        /* Corner brackets */
+        .scan-box::before,
+        .scan-box::after,
+        .scan-box span::before,
+        .scan-box span::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-color: var(--mint);
+            border-style: solid;
+        }
+
+        .scan-box::before  { top: 0;    left: 0;   border-width: 3px 0 0 3px; }
+        .scan-box::after   { top: 0;    right: 0;  border-width: 3px 3px 0 0; }
+        .scan-box span::before { bottom: 0; left: 0;   border-width: 0 0 3px 3px; }
+        .scan-box span::after  { bottom: 0; right: 0;  border-width: 0 3px 3px 0; }
+
+        /* Scan line animation */
+        .scan-line {
+            position: absolute;
+            left: 4px;
+            right: 4px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--mint), transparent);
+            animation: scanMove 1.8s ease-in-out infinite;
+        }
+
+        @keyframes scanMove {
+            0%   { top: 6px;  opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { top: calc(100% - 6px); opacity: 0; }
+        }
+
+        .scan-hint {
+            margin-top: 0.75rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: rgba(255,255,255,0.7);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+        }
+
+        .camera-cancel-row {
+            display: none;
+            justify-content: center;
+            margin-top: 0.6rem;
+        }
+
+        .camera-cancel-row.active { display: flex; }
+
+        .camera-error {
+            display: none;
+            margin-top: 0.75rem;
+            padding: 0.65rem 0.9rem;
+            background: rgba(244, 162, 97, 0.1);
+            border: 1px solid rgba(244, 162, 97, 0.35);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: var(--orange);
+        }
+
+        .camera-error.visible { display: block; }
+
         /* Mobile */
         @media (max-width: 480px) {
             body { padding: 1rem 0.6rem 3rem; }
@@ -376,6 +519,34 @@
             <input type="text" id="qrInput" placeholder="Paste or type QR code value" autocomplete="off" autofocus>
             <button class="btn btn-mint" id="scanBtn" onclick="doScan()">Scan</button>
         </div>
+
+        <div class="camera-toggle-row">
+            <button class="btn-camera" id="cameraBtn" onclick="startCamera()">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7-10H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7.5a2 2 0 0 0-2-2m-3.5 1.5V5.5A1.5 1.5 0 0 0 14 4h-4a1.5 1.5 0 0 0-1.5 1.5V7h7z"/>
+                </svg>
+                Scan with Camera
+            </button>
+        </div>
+
+        <div class="camera-viewport" id="cameraViewport">
+            <video id="cameraVideo" autoplay playsinline muted></video>
+            <div class="scan-overlay">
+                <div class="scan-box">
+                    <span></span>
+                    <div class="scan-line"></div>
+                </div>
+                <div class="scan-hint">Point at a QR code</div>
+            </div>
+        </div>
+
+        <canvas id="qrCanvas"></canvas>
+
+        <div class="camera-cancel-row" id="cameraCancelRow">
+            <button class="btn-clear" onclick="stopCamera()">Cancel Scan</button>
+        </div>
+
+        <div class="camera-error" id="cameraError"></div>
 
         <!-- Scan result -->
         <div class="result result-verified" id="resultVerified">
@@ -409,6 +580,7 @@
         <div class="lookup-results" id="lookupResults"></div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script>
         const qrInput = document.getElementById('qrInput');
         const scanBtn = document.getElementById('scanBtn');
@@ -518,6 +690,95 @@
 
         function escapeAttr(str) {
             return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        // ── Camera QR scanner ────────────────────────────────────────────────
+        const cameraViewport  = document.getElementById('cameraViewport');
+        const cameraVideo     = document.getElementById('cameraVideo');
+        const qrCanvas        = document.getElementById('qrCanvas');
+        const cameraCancelRow = document.getElementById('cameraCancelRow');
+        const cameraError     = document.getElementById('cameraError');
+        const cameraBtn       = document.getElementById('cameraBtn');
+
+        let cameraStream    = null;
+        let rafHandle       = null;
+        let scanCooldown    = false;
+
+        async function startCamera() {
+            cameraError.classList.remove('visible');
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showCameraError('Camera not supported in this browser.');
+                return;
+            }
+
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } }
+                });
+            } catch (err) {
+                const msg = err.name === 'NotAllowedError'
+                    ? 'Camera permission denied. Please allow camera access and try again.'
+                    : 'Could not access camera: ' + err.message;
+                showCameraError(msg);
+                return;
+            }
+
+            cameraVideo.srcObject = cameraStream;
+            cameraViewport.classList.add('active');
+            cameraCancelRow.classList.add('active');
+            cameraBtn.disabled = true;
+            cameraBtn.style.opacity = '0.4';
+
+            cameraVideo.addEventListener('loadedmetadata', tickScan, { once: true });
+        }
+
+        function stopCamera() {
+            if (rafHandle) { cancelAnimationFrame(rafHandle); rafHandle = null; }
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(t => t.stop());
+                cameraStream = null;
+            }
+            cameraVideo.srcObject = null;
+            cameraViewport.classList.remove('active');
+            cameraCancelRow.classList.remove('active');
+            cameraBtn.disabled = false;
+            cameraBtn.style.opacity = '';
+            scanCooldown = false;
+        }
+
+        function tickScan() {
+            if (!cameraStream) return;
+
+            const video = cameraVideo;
+            if (video.readyState < video.HAVE_ENOUGH_DATA) {
+                rafHandle = requestAnimationFrame(tickScan);
+                return;
+            }
+
+            const ctx = qrCanvas.getContext('2d', { willReadFrequently: true });
+            qrCanvas.width  = video.videoWidth;
+            qrCanvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, qrCanvas.width, qrCanvas.height);
+
+            const imageData = ctx.getImageData(0, 0, qrCanvas.width, qrCanvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: 'dontInvert'
+            });
+
+            if (code && code.data && !scanCooldown) {
+                scanCooldown = true;
+                stopCamera();
+                qrInput.value = code.data;
+                doScan();
+            } else {
+                rafHandle = requestAnimationFrame(tickScan);
+            }
+        }
+
+        function showCameraError(msg) {
+            cameraError.textContent = msg;
+            cameraError.classList.add('visible');
         }
     </script>
 
