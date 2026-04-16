@@ -4,3 +4,4 @@ __pycache__/
 safeset.db 
 static/qrcodes/ 
 .env 
+_assets/ 
