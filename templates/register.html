@@ -335,6 +335,7 @@
         {% endif %}
 
         <form method="POST" action="/register" id="registerForm">
+            <input type="hidden" id="langHidden" name="lang" value="en">
             <div class="field">
                 <label for="full_name" data-i18n="labelName">Full Name</label>
                 <input type="text" id="full_name" name="full_name" placeholder="Your full name" data-i18n-placeholder="placeholderName" required>
@@ -476,7 +477,10 @@
 
         // ── Language switcher ────────────────────────────────────────────────
         document.querySelectorAll('input[name="lang"]').forEach(radio => {
-            radio.addEventListener('change', () => applyLanguage(radio.value));
+            radio.addEventListener('change', () => {
+                applyLanguage(radio.value);
+                document.getElementById('langHidden').value = radio.value;
+            });
         });
     </script>
 
