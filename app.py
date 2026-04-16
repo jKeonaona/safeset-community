@@ -10,6 +10,8 @@ from database import get_db, init_db
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+VIDEO_IDS = {"en": "BF9TB7TIQcI", "es": "ZaHtAiLCark"}
+
 QR_DIR = os.path.join(app.static_folder, "qrcodes")
 os.makedirs(QR_DIR, exist_ok=True)
 
@@ -54,6 +56,10 @@ def register():
     if not full_name or not email or not role:
         return render_template("register.html", error="Please fill in all required fields.")
 
+    language = request.form.get("lang", "en").strip().lower()
+    if language not in ("en", "es"):
+        language = "en"
+
     other_role = request.form.get("other_role", "").strip() or None
     minor_name = request.form.get("minor_name", "").strip() or None
     minor_age = request.form.get("minor_age", "").strip() or None
@@ -69,9 +75,9 @@ def register():
     try:
         cursor = db.execute(
             """INSERT INTO participants
-               (full_name, email, role, other_role, minor_name, minor_age, guardian_name)
-               VALUES (?, ?, ?, ?, ?, ?, ?)""",
-            (full_name, email, role, other_role, minor_name, minor_age, guardian_name),
+               (full_name, email, role, other_role, minor_name, minor_age, guardian_name, language)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            (full_name, email, role, other_role, minor_name, minor_age, guardian_name, language),
         )
         db.commit()
         participant_id = cursor.lastrowid
@@ -83,7 +89,14 @@ def register():
 
 @app.route("/video/<int:participant_id>")
 def video(participant_id):
-    return render_template("video.html", participant_id=participant_id)
+    db = get_db()
+    try:
+        row = db.execute("SELECT language FROM participants WHERE id = ?", (participant_id,)).fetchone()
+    finally:
+        db.close()
+    lang = (row["language"] if row and row["language"] else "en")
+    video_id = VIDEO_IDS.get(lang, VIDEO_IDS["en"])
+    return render_template("video.html", participant_id=participant_id, video_id=video_id, lang=lang)
 
 
 @app.route("/heartbeat/<int:participant_id>", methods=["POST"])

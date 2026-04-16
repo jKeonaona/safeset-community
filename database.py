@@ -25,6 +25,7 @@ def init_db():
             minor_name TEXT,
             minor_age INTEGER,
             guardian_name TEXT,
+            language TEXT DEFAULT 'en',
             completed INTEGER NOT NULL DEFAULT 0,
             completed_at TEXT,
             progress REAL NOT NULL DEFAULT 0,
@@ -57,6 +58,11 @@ def init_db():
     # Add columns if upgrading an older database
     _add_column_if_missing(c, "participants", "progress", "REAL NOT NULL DEFAULT 0")
     _add_column_if_missing(c, "participants", "completed_at", "TEXT")
+
+    try:
+        c.execute("ALTER TABLE participants ADD COLUMN language TEXT DEFAULT 'en'")
+    except Exception:
+        pass
 
     conn.commit()
     conn.close()
