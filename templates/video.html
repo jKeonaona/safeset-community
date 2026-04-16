@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Safety Training — Safe Set Standards</title>
+    <title>{% if lang == 'es' %}Capacitación de Seguridad — Estándares de Set Seguro{% else %}Safety Training — Safe Set Standards{% endif %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
@@ -294,13 +294,13 @@
 <body>
 
     <div class="brand">
-        <h1>Safe Set Standards</h1>
-        <p>Safety training &amp; acknowledgment</p>
+        <h1>{% if lang == 'es' %}Estándares de Set Seguro{% else %}Safe Set Standards{% endif %}</h1>
+        <p>{% if lang == 'es' %}Capacitación de seguridad y reconocimiento{% else %}Safety training &amp; acknowledgment{% endif %}</p>
     </div>
 
     <!-- Video Card -->
     <div class="card">
-        <h2>Safety Training Video</h2>
+        <h2>{% if lang == 'es' %}Video de Capacitación de Seguridad{% else %}Safety Training Video{% endif %}</h2>
 
         <div class="video-wrap">
             <iframe
@@ -313,40 +313,40 @@
 
         <div class="progress-section">
             <div class="progress-header">
-                <span class="progress-label">Video Progress</span>
+                <span class="progress-label">{% if lang == 'es' %}Progreso del Video{% else %}Video Progress{% endif %}</span>
                 <span class="progress-pct" id="pctText">0%</span>
             </div>
             <div class="progress-track">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
             <div class="threshold-hint">
-                Acknowledgment unlocks at <span class="mark">90%</span>
+                {% if lang == 'es' %}El reconocimiento se desbloquea al <span class="mark">90%</span>{% else %}Acknowledgment unlocks at <span class="mark">90%</span>{% endif %}
             </div>
         </div>
     </div>
 
     <!-- Acknowledgment Card -->
     <div class="card">
-        <h2>Acknowledgment</h2>
+        <h2>{% if lang == 'es' %}Reconocimiento{% else %}Acknowledgment{% endif %}</h2>
 
         <div class="ack-section locked" id="ackSection">
             <div class="lock-message" id="lockMsg">
                 <span class="lock-icon">&#128274;</span>
-                <span>Complete at least 90% of the video above to unlock this section.</span>
+                <span>{% if lang == 'es' %}Complete al menos el 90% del video anterior para desbloquear esta sección.{% else %}Complete at least 90% of the video above to unlock this section.{% endif %}</span>
             </div>
 
             <div class="unlock-message" id="unlockMsg">
                 <span class="lock-icon">&#128275;</span>
-                <span>Video complete — you may now acknowledge the standards.</span>
+                <span>{% if lang == 'es' %}Video completado — ahora puede reconocer los estándares.{% else %}Video complete — you may now acknowledge the standards.{% endif %}</span>
             </div>
 
             <div class="ack-inner">
                 <form method="POST" action="/complete/{{ participant_id }}" id="ackForm">
                     <label class="checkbox-row">
                         <input type="checkbox" id="ackCheck" name="acknowledged" required>
-                        <span>I have watched this video in full and agree to the standards outlined.</span>
+                        <span>{% if lang == 'es' %}He visto este video completo y acepto los estándares descritos.{% else %}I have watched this video in full and agree to the standards outlined.{% endif %}</span>
                     </label>
-                    <button type="submit" class="btn-confirm" id="confirmBtn" disabled>Confirm Acknowledgment</button>
+                    <button type="submit" class="btn-confirm" id="confirmBtn" disabled>{% if lang == 'es' %}Confirmar Reconocimiento{% else %}Confirm Acknowledgment{% endif %}</button>
                 </form>
             </div>
         </div>
