@@ -1,0 +1,6 @@
+venv/ 
+__pycache__/ 
+*.pyc 
+safeset.db 
+static/qrcodes/ 
+.env 
